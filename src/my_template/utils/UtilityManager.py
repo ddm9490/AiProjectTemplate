@@ -19,3 +19,5 @@ class UtilityManager:
     # The below two lines are for deterministic algorithm behavior in CUDA
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+  def get_project_dir(self):
+    pass

@@ -1,1 +1,1 @@
-from .loss_facory import LossFactory
+from .loss_factory import LossFactory
