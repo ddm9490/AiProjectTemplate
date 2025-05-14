@@ -1,5 +1,5 @@
 from .CallBack import CallBack
 
-class EarlyStopping:
+class EarlyStoppingCallBack(CallBack):
     def __init__(self):
         pass
