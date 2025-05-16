@@ -8,20 +8,26 @@ class ConfigurationManager:
         self._config_path = config_path
     
     def _load_config(self):
-        pass
+        with open(self._config_path,"r") as f:
+            self._config = yaml.safe_load(f)
+        
+        self._model_config = ModelConfig()
+        self._trainer_config = TrainerConfig()
+        self._dataset_config = DatasetConfig()
+        self._data_loader_config = DataLoaderConfig()
     
     @property
     def model_config(self)-> ModelConfig:
-        pass
+        return self._model_config
 
     @property
     def trainer_config(self) -> TrainerConfig:
-        pass
+        return self._trainer_config
     
     @property
     def dataset_config(self) -> DatasetConfig:
-        pass
+        return seld._dataset_config
     
     @property
     def data_loader_config(self) -> DataLoaderConfig:
-        pass
+        return self._data_loader_config
