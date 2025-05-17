@@ -33,7 +33,7 @@ class UtilityManager:
   
   @property
   def root_path(self) -> str:
-    assert aelf._root_path is not None,"Root Path is Not valid"
+    assert self._root_path is not None,"Root Path is Not valid"
     return self._root_path
 
   @property
