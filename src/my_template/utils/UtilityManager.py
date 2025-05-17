@@ -5,7 +5,7 @@ import os
 
 class UtilityManager:
   def __init__(self) -> None:
-    self._get_rooth_path()
+    self._get_root_path()
 
   def set_seed(self,seed_value : int = 42) -> None:
     """Set seed for reproducibility."""
