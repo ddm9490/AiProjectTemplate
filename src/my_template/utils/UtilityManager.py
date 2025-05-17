@@ -19,12 +19,18 @@ class UtilityManager:
     # The below two lines are for deterministic algorithm behavior in CUDA
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-  def get_root_path(self) -> str:
+
+  def _get_root_path(self) -> None:
     current_dir = os.path.abspath(os.path.dirname(__file__))
     while True:
       if os.path.exists(os.path.join(current_dir, '.git')):
-        return current_dir
+        self._root_path = current_dir
+        break
       parent_dir = os.path.dirname(current_dir)
       if parent_dir == current_dir:
-        return None
+        self._root_path = None
       current_dir = parent_dir
+  
+  @property
+  def root_path(self) -> str:
+    return self._root_path
