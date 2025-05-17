@@ -7,7 +7,7 @@ class UtilityManager:
   def __init__(self) -> None:
     pass
 
-  def set_seed(self,seed : int = 42) -> None:
+  def set_seed(self,seed_value : int = 42) -> None:
     """Set seed for reproducibility."""
     np.random.seed(seed_value)
     torch.manual_seed(seed_value)
