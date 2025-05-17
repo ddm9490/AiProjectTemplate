@@ -1,4 +1,4 @@
-from ...abc_interfaces.model_interfaces import BaseModel
+from ..abc_interfaces.model_interfaces import BaseModel
 
 
 class Saver:
