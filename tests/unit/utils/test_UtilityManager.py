@@ -1,16 +1,10 @@
-from src.my_template.utils import UtilityManager
-import pytest
 
-@pytest.fixture
-def my_test_instance() -> UtilityManager:
-  instance = UtilityManager()
-  return instance
 
-def test_set_seed(my_test_instance) -> None:
-  my_test_instance.set_seed(42)
+def test_set_seed(test_utility_manager) -> None:
+  test_utility_manager.set_seed(42)
 
-def test_root_path(my_test_instance) -> None:
-  print(my_test_instance.root_path)
+def test_root_path(test_utility_manager) -> None:
+  print(test_utility_manager.root_path)
 
-def test_config_path(my_test_instance) -> None:
-  print(my_test_instance.config_path)
+def test_config_path(test_utility_manager) -> None:
+  print(test_utility_manager.config_path)
