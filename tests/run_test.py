@@ -1,7 +1,7 @@
 
 import pytest
 
-def run_test() -> None:
+def run_all_test() -> None:
     pytest.main()
 
 def run_unit_test() -> None:
