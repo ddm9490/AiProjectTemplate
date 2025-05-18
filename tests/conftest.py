@@ -1,6 +1,5 @@
 import pytest
 
-
 from src.my_template.data import *
 from src.my_template.training import *
 from src.my_template.utils import *

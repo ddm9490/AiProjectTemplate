@@ -10,4 +10,4 @@ def run_unit_test() -> None:
 def run_integration_test() -> None:
     pytest.main(["tests/integration"])
 if __name__ == "__main__":
-    run_test()
+    run_all_test()
