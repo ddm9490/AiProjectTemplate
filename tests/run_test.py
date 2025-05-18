@@ -2,7 +2,7 @@
 import pytest
 
 def run_all_test() -> None:
-    pytest.main()
+    pytest.main(["tests"])
 
 def run_unit_test() -> None:
     pytest.main(["tests/unit"])
