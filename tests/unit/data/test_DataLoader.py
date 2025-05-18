@@ -1,4 +1,4 @@
-from ...src.my_template.data import DataLoader
+from src.my_template.data import DataLoader
 import pytest
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-from ....src.my_template.utils import UtilityManager
+from src.my_template.utils import UtilityManager
 import pytest
 
 @pytest.fixture
