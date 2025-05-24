@@ -4,3 +4,4 @@
 **/__pycache__/
 reports
 .coverage
+scripts/folder_tree.py

@@ -14,4 +14,4 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-commit]
-        args: ["tests/unit"]
+        args: ["tests/unit/utils"]

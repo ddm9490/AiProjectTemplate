@@ -78,7 +78,8 @@ if __name__ == "__main__":
         "__pycache__",
         ".git",  # Git 관련 내부 폴더
         ".vscode",  # VS Code 설정 폴더
-        "node_modules",  # JavaScript 프로젝트 관련 폴더 (필요시)
+        "reports",  # 보고서 폴더
+        ".coverage",  # 코드 커버리지 파일
     ]
 
     # 시각화 실행 (최대 깊이 3으로 제한)
