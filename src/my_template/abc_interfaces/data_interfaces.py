@@ -4,9 +4,7 @@
 from abc import ABC, abstractmethod
 
 
-
 class BaseDataset(ABC):
-
     """
     Abstract base class for datasets in the my_template package.
     This class defines the interface for datasets used in machine learning tasks.
@@ -29,7 +27,7 @@ class BaseDataset(ABC):
         pass
 
     @abstractmethod
-    def __getitem__(self, index : int):
+    def __getitem__(self, index: int):
         pass
 
     @abstractmethod

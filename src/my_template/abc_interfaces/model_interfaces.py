@@ -2,9 +2,10 @@
 
 """Base model interface for PyTorch models."""
 
-from abc import ABC,abstractmethod
+from abc import ABC, abstractmethod
 from torch import Tensor
 from torch.nn import Module
+
 
 class BaseModel(Module, ABC):
     """
@@ -34,13 +35,12 @@ class BaseModel(Module, ABC):
         """
 
     @abstractmethod
-    def forward(self,data:Tensor) -> Tensor:
+    def forward(self, data: Tensor) -> Tensor:
         """
         Abstract method for the forward pass of the model.
         Args:
             data (Tensor): Input data for the model.
         Returns:
             Tensor: Output of the model after processing the input data.
-        
+
         """
-    
