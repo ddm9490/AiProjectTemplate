@@ -1,1 +1,1 @@
-from .optimizer_factory import OptimizerFactory
+from my_template.training.optmizers.optimizer_factory import OptimizerFactory

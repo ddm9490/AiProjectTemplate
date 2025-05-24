@@ -79,7 +79,10 @@ if __name__ == "__main__":
         ".git",  # Git 관련 내부 폴더
         ".vscode",  # VS Code 설정 폴더
         "reports",  # 보고서 폴더
-        ".coverage",  # 코드 커버리지 파일
+        ".coverage",  # 코드 커버리지 파일,
+        "reports",  # 보고서 폴더
+        ".github",  # GitHub 관련 폴더
+        ".mypy_cache",  # mypy 캐시 폴더
     ]
 
     # 시각화 실행 (최대 깊이 3으로 제한)

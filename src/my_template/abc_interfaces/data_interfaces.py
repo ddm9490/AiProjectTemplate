@@ -3,6 +3,8 @@
 """Module for abstract base classes for data interfaces in the my_template package."""
 
 from abc import ABC, abstractmethod
+from torch.utils.data import Dataset
+from my_template.data.data_schema import Config
 
 
 class BaseDataset(ABC):
@@ -20,19 +22,19 @@ class BaseDataset(ABC):
     """
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @abstractmethod
-    def __len__(self):
+    def __len__(self) -> int:
         pass
 
     @abstractmethod
-    def __getitem__(self, index: int):
+    def __getitem__(self, index: int) -> object:
         pass
 
     @abstractmethod
-    def _set_config(self, config):
+    def _set_config(self, config: Config) -> None:
         """
         Set the configuration for the dataset.
 
@@ -41,7 +43,7 @@ class BaseDataset(ABC):
         """
 
 
-class BaseDataProcessor(ABC):
+class BaseDataPreprorocessor(Dataset, ABC):
     """
     Abstract base class for data processors in the my_template package.
     This class defines the interface for processing data.
@@ -54,11 +56,11 @@ class BaseDataProcessor(ABC):
         None
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @abstractmethod
-    def process_data(self, data):
+    def process_data(self, data) -> object:
         """
         Process the data.
 
@@ -70,7 +72,7 @@ class BaseDataProcessor(ABC):
         """
 
     @abstractmethod
-    def save_processed_data(self, processed_data, save_path):
+    def save_processed_data(self, processed_data, save_path) -> None:
         """
         Save the processed data to a specified path.
 
@@ -80,7 +82,7 @@ class BaseDataProcessor(ABC):
         """
 
     @abstractmethod
-    def _set_config(self, config):
+    def _set_config(self, config: Config) -> None:
         """
         Set the configuration for the data processor.
 

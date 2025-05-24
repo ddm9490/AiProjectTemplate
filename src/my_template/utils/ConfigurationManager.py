@@ -1,41 +1,28 @@
 """Utility class to manage configuration settings for the model, trainer, dataset, and data loader."""
 
-# import os
-# import sys
-import yaml
-from .Config import ModelConfig, TrainerConfig, DatasetConfig, DataLoaderConfig
+from config.config_schema import ModelConfig, TrainingConfig, DataConfig, UtilityConfig, MainConfig
+from typing import Optional
+from omegaconf import DictConfig
 
 
 class ConfigurationManager:
-    def __init__(self, config_path: str):
-        self._config_path = config_path
-        self._config = None
+    def __init__(self, cfg_omega: DictConfig) -> None:
         self._model_config = None
-        self._trainer_config = None
-        self._dataset_config = None
-        self._data_loader_config = None
 
-    def _load_config(self):
-        with open(self._config_path, "r", encoding="utf-8") as f:
-            self._config = yaml.safe_load(f)
-
-        self._model_config = ModelConfig()
-        self._trainer_config = TrainerConfig()
-        self._dataset_config = DatasetConfig()
-        self._data_loader_config = DataLoaderConfig()
+        self._main_config : MainConfig = MainConfig.model_validate(cfg_omega)
 
     @property
     def model_config(self) -> ModelConfig:
-        return self._model_config
+        return self._main_config.model
 
     @property
-    def trainer_config(self) -> TrainerConfig:
-        return self._trainer_config
+    def training_config(self) -> TrainingConfig:
+        return self._main_config.training
 
     @property
-    def dataset_config(self) -> DatasetConfig:
-        return self._dataset_config
+    def data_config(self) -> DataConfig:
+        return self._main_config.data
 
     @property
-    def data_loader_config(self) -> DataLoaderConfig:
-        return self._data_loader_config
+    def utility_config(self) -> UtilityConfig:
+        return self._main_config.utility

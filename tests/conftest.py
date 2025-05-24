@@ -4,12 +4,12 @@
 
 import pytest
 
-from src.my_template.utils import UtilityManager, ConfigurationManager
+from my_template.utils import UtilityManager, ConfigurationManager
 
-# from src.my_template.data import DataLoader, DataProcessor, DataVisualizer, Dataset
-# from src.my_template.training import Evaluator, Trainer, TrainVisualizer, \
+# from my_template.data import DataLoader, DataProcessor, DataVisualizer, Dataset
+# from my_template.training import Evaluator, Trainer, TrainVisualizer, \
 # PipeLine, Tuner, ExperimentManager
-# from src.my_template.models import Model
+# from my_template.models import Model
 
 
 @pytest.fixture
@@ -26,7 +26,7 @@ def test_utility_manager() -> UtilityManager:
 
 
 @pytest.fixture
-def test_configuration_manager(utility_manager) -> ConfigurationManager:
+def test_configuration_manager(utility_manager: UtilityManager) -> ConfigurationManager:
     """
     Fixture for the ConfigurationManager instance.
 
@@ -37,5 +37,5 @@ def test_configuration_manager(utility_manager) -> ConfigurationManager:
         ConfigurationManager: An instance of ConfigurationManager.
     """
 
-    instance = ConfigurationManager(config_path=utility_manager.config_path)
+    instance = ConfigurationManager()
     return instance

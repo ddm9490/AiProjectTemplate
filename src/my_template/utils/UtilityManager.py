@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 import random
 import os
@@ -10,6 +9,9 @@ class UtilityManager:
 
     def set_seed(self, seed_value: int = 42) -> None:
         """Set seed for reproducibility."""
+
+        import torch
+
         np.random.seed(seed_value)
         torch.manual_seed(seed_value)
         torch.cuda.manual_seed(seed_value)
@@ -29,7 +31,7 @@ class UtilityManager:
                 break
             parent_dir = os.path.dirname(current_dir)
             if parent_dir == current_dir:
-                self._root_path = None
+                self._root_path = "."
             current_dir = parent_dir
 
     @property

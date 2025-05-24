@@ -1,0 +1,19 @@
+# config/config.yaml
+
+# ⭐️ 이 부분이 중요합니다: defaults 목록
+defaults:
+  - model: base       # model 그룹에서 resnet.yaml을 기본으로 불러옴
+  - dataset: base    # dataset 그룹에서 cifar10.yaml을 기본으로 불러옴
+  - training: base      # training 그룹에서 base.yaml을 기본으로 불러옴
+  - _self_              # 메인 config.yaml 자체의 필드도 포함한다는 의미
+
+# 메인 config.yaml에 정의된 필드들
+project_name: AiProjectTemplate
+device: cuda
+seed: 42
+logging_level: INFO
+
+# model, dataset, training 설정은 defaults에서 불러온 내용으로 채워집니다.
+# 필요하다면 여기서 기본값을 오버라이드할 수 있습니다.
+# model: # (선택 사항: 여기서 직접 오버라이드 가능)
+#   pretrained: false

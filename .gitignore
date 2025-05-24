@@ -5,3 +5,5 @@
 reports
 .coverage
 scripts/folder_tree.py
+.mypy_cache
+temp.log

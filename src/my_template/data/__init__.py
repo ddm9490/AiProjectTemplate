@@ -1,3 +1,3 @@
-from .DataProcessor import DataProcessor
-from .Dataset import Dataset
-from .DataVisualizer import DataVisualizer
+from my_template.data.DataPreprocessor import DataPreprocessor
+from my_template.data.Dataset import Dataset
+from my_template.data.DataVisualizer import DataVisualizer

@@ -1,0 +1,5 @@
+# @package _group_
+name: ImageNet
+data_path: /data/imagenet
+image_size: 224
+num_channels: 3

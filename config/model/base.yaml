@@ -1,0 +1,4 @@
+# @package _group_ # 이 파일의 설정은 'model' 그룹 아래에 들어감을 명시 (Hydra가 자동으로 적용)
+name: ResNet50
+num_classes: 100
+pretrained: true
