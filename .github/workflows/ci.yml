@@ -1,0 +1,66 @@
+# .github/workflows/ci.yml
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # main 브랜치로 푸시될 때 워크플로우 실행
+  pull_request:
+    branches:
+      - main # main 브랜치로의 Pull Request 시 워크플로우 실행
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest # 워크플로우를 실행할 가상 환경 (Ubuntu 최신 버전)
+    strategy:
+      matrix:
+        # 테스트할 Python 버전 지정. 여러 버전을 동시에 테스트할 수 있습니다.
+        python-version: ["3.12"]
+        # NVIDIA GPU가 필요한 경우, CUDA 이미지가 포함된 러너 사용을 고려할 수 있습니다.
+        # 그러나 GitHub Actions의 기본 `ubuntu-latest`는 GPU가 없으므로,
+        # PyTorch 테스트는 CPU 모드로 실행되거나, 더 전문적인 CI 환경이 필요합니다.
+        # 복잡한 GPU 테스트는 self-hosted runner나 별도의 GPU 클라우드 CI 서비스 고려.
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4 # 코드 체크아웃 (GitHub Actions에서 제공하는 기본 Action)
+
+      - name: Set up Python ${{ matrix.python-version }} and Poetry
+        uses: actions/setup-python@v5 # Python 환경 설정 Action
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "poetry" # Poetry 의존성 캐싱 (빌드 시간 단축)
+
+      - name: Install Poetry dependencies
+        run: |
+          # `poetry config virtualenvs.in-project true`는 프로젝트 루트에 .venv를 생성하도록 설정
+          # 이를 통해 CI 환경에서도 로컬과 유사한 가상 환경을 사용할 수 있습니다.
+          poetry config virtualenvs.in-project true
+          poetry install --no-root --with dev # --no-root: 현재 프로젝트를 editable 모드로 설치하지 않음 (CI에서는 불필요)
+
+      - name: Run Ruff (Lint and Format Check)
+        run: |
+          # CI에서는 `--fix` 없이 검사만 수행하여 문제가 있으면 실패시키고 수동 수정 유도
+          # 또는 `--fix --exit-non-zero-on-fix`를 사용하여 CI에서도 자동 수정을 시도하고 실패시키거나
+          # `--check` 플래그로 수정 없이 검사만 합니다.
+          poetry run ruff check .
+          poetry run ruff format . --check # --check: 포매팅이 필요한 파일이 있다면 실패시키고 출력
+
+      - name: Run Pytest (All tests)
+        # torch 의존성이 있는 테스트 포함 (CI 환경에서는 CPU로 실행될 가능성 높음)
+        run: |
+          poetry run pytest
+
+      - name: Upload Coverage Report (Optional)
+        uses: actions/upload-artifact@v4 # 아티팩트 업로드 Action (커버리지 리포트를 GitHub에 저장)
+        if: always() # 테스트 실패 여부와 상관없이 항상 실행 (리포트 확인용)
+        with:
+          name: coverage-report-${{ matrix.python-version }}
+          path: reports/coverage/ # pytest에서 생성된 커버리지 리포트 경로
+          retention-days: 5 # 아티팩트 보존 기간
+
+      # MLflow, Airflow 등의 추가 통합 (선택 사항)
+      # 실제 MLflow 서버나 Airflow DAG를 CI에서 실행하는 것은 복잡하며
+      # 보통 별도의 배포 파이프라인이나 스테이징 환경에서 이루어집니다.
+      # 여기서는 '코드'가 잘 작동하는지 검증하는 CI에 집중합니다.

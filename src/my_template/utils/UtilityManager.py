@@ -39,5 +39,4 @@ class UtilityManager:
 
     @property
     def config_path(self) -> str:
-
         return os.path.join(self.root_path, "config/config.yaml")

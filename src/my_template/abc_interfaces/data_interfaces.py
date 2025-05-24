@@ -1,6 +1,7 @@
 # my_template/abc_interfaces/data_interfaces.py
 
 """Module for abstract base classes for data interfaces in the my_template package."""
+
 from abc import ABC, abstractmethod
 
 

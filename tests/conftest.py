@@ -1,6 +1,7 @@
 # my_template/tests/conftest.py
 
 """Module for pytest fixtures for the my_template package."""
+
 import pytest
 
 from src.my_template.utils import UtilityManager, ConfigurationManager
