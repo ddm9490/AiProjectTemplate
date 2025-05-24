@@ -10,9 +10,6 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "torch (>=2.7.0,<3.0.0)",
     "mlflow (>=2.22.0,<3.0.0)",
-    "pytest (>=8.3.5,<9.0.0)",
-    "pytest-cov (>=6.1.1,<7.0.0)",
-    "pytest-rich (>=0.2.0,<0.3.0)",
     "rich (>=14.0.0,<15.0.0)",
     "numpy (>=2.2.6,<3.0.0)",
     "matplotlib (>=3.10.3,<4.0.0)",
@@ -24,7 +21,6 @@ dependencies = [
     "apache-airflow (>=3.0.1,<4.0.0)",
     "mypy (>=1.15.0,<2.0.0)",
     "scikit-learn (>=1.6.1,<2.0.0)",
-    "pre-commit (>=4.2.0,<5.0.0)",
     "pyyaml (>=6.0.2,<7.0.0)"
 ]
 
@@ -32,9 +28,11 @@ dependencies = [
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 ruff = "^0.11.11"
-isort = "^6.0.1"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+pytest-rich = "^0.2.0"
+pre-commit = "^4.2.0"
 
 [tool.pytest.ini_options]
 addopts = "--rich --cov=. --cov-report=html:reports/coverage"
@@ -42,7 +40,10 @@ testpaths = ["tests"]
 pythonpath = "."
 
 [tool.ruff]
+line-length = 100
 lint.ignore = ["F401"]
+
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

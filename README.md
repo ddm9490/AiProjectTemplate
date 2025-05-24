@@ -42,3 +42,45 @@ git clone [프로젝트 저장소 URL]
 cd [프로젝트 디렉토리]
 pip install -r requirements.txt
 .
+```
+
+---
+## 🚀 빠른 시작 (Quick Start)
+
+이 프로젝트는 `scripts/tasks.py` 파일을 통해 주요 개발 작업을 자동화합니다.
+
+### ⚙️ 환경 설정
+
+1.  **의존성 설치:**
+    ```bash
+    python scripts/tasks.py setup
+    ```
+
+### ✨ 개발 워크플로우
+
+1.  **코드 린트 검사:**
+    ```bash
+    python scripts/tasks.py lint
+    ```
+    또는 린트 결과를 `reports/lint/` 폴더에 저장하려면:
+    ```bash
+    python scripts/tasks.py lint_report
+    ```
+2.  **테스트 실행:**
+    ```bash
+    python scripts/tasks.py test
+    ```
+    테스트 통과 후 코드 커버리지만 다시 생성하려면:
+    ```bash
+    python scripts/tasks.py coverage
+    ```
+3.  **애플리케이션 실행:**
+    ```bash
+    python scripts/tasks.py run-app
+    ```
+
+### 🧹 프로젝트 정리
+
+캐시 파일, 보고서 등을 삭제하려면:
+```bash
+python scripts/tasks.py clean
