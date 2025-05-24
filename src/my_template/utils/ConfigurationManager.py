@@ -1,14 +1,20 @@
+"""Utility class to manage configuration settings for the model, trainer, dataset, and data loader."""
+# import os 
+# import sys
 import yaml
-import os
-import sys
-from .Config import *
+from .Config import ModelConfig, TrainerConfig, DatasetConfig, DataLoaderConfig
 
 class ConfigurationManager:
     def __init__(self,config_path : str):
         self._config_path = config_path
+        self._config = None
+        self._model_config = None
+        self._trainer_config = None
+        self._dataset_config = None
+        self._data_loader_config = None
     
     def _load_config(self):
-        with open(self._config_path,"r") as f:
+        with open(self._config_path,"r",encoding = "utf-8") as f:
             self._config = yaml.safe_load(f)
         
         self._model_config = ModelConfig()
@@ -26,7 +32,7 @@ class ConfigurationManager:
     
     @property
     def dataset_config(self) -> DatasetConfig:
-        return seld._dataset_config
+        return self._dataset_config
     
     @property
     def data_loader_config(self) -> DataLoaderConfig:
