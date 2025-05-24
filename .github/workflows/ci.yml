@@ -5,73 +5,92 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main # main 브랜치로 푸시될 때 워크플로우 실행
+      - main
   pull_request:
     branches:
-      - main # main 브랜치로의 Pull Request 시 워크플로우 실행
+      - main
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest # 워크플로우를 실행할 가상 환경 (Ubuntu 최신 버전)
-    strategy:
-      matrix:
-        # 테스트할 Python 버전 지정. 여러 버전을 동시에 테스트할 수 있습니다.
-        python-version: [3.12]
-        # NVIDIA GPU가 필요한 경우, CUDA 이미지가 포함된 러너 사용을 고려할 수 있습니다.
-        # 그러나 GitHub Actions의 기본 `ubuntu-latest`는 GPU가 없으므로,
-        # PyTorch 테스트는 CPU 모드로 실행되거나, 더 전문적인 CI 환경이 필요합니다.
-        # 복잡한 GPU 테스트는 self-hosted runner나 별도의 GPU 클라우드 CI 서비스 고려.
-
+  # 1. build_lint_and_fast_tests Job: 항상 실행되는 빠른 품질 검사 및 경량 테스트
+  build_lint_and_fast_tests:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # 코드 체크아웃 (GitHub Actions에서 제공하는 기본 Action)
+        uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }} and Poetry
-        uses: actions/setup-python@v5 # Python 환경 설정 Action
+      - name: Set up Python 3.12 and Poetry
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
+          cache: "poetry"
 
-      - name: Cache Poetry dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
       - name: Install Poetry
-        run: |
-          pip install poetry # pip을 사용하여 Poetry 설치
-          poetry --version # 설치 확인 (선택 사항)
+        run: pip install poetry
 
       - name: Install Poetry dependencies
         run: |
-          # `poetry config virtualenvs.in-project true`는 프로젝트 루트에 .venv를 생성하도록 설정
-          # 이를 통해 CI 환경에서도 로컬과 유사한 가상 환경을 사용할 수 있습니다.
           poetry config virtualenvs.in-project true
-          poetry install --no-root --with dev # --no-root: 현재 프로젝트를 editable 모드로 설치하지 않음 (CI에서는 불필요)
+          poetry install --no-root --with dev
 
       - name: Run Ruff (Lint and Format Check)
         run: |
-          # CI에서는 `--fix` 없이 검사만 수행하여 문제가 있으면 실패시키고 수동 수정 유도
-          # 또는 `--fix --exit-non-zero-on-fix`를 사용하여 CI에서도 자동 수정을 시도하고 실패시키거나
-          # `--check` 플래그로 수정 없이 검사만 합니다.
           poetry run ruff check .
-          poetry run ruff format . --check # --check: 포매팅이 필요한 파일이 있다면 실패시키고 출력
+          poetry run ruff format . --check
 
-      - name: Run Pytest (All tests)
-        # torch 의존성이 있는 테스트 포함 (CI 환경에서는 CPU로 실행될 가능성 높음)
+      - name: Run Pytest (Fast / Unit Tests)
+        # 중요: 여기서는 torch 임포트 오버헤드가 없는 유닛 테스트만 실행
+        # 예를 들어, tests/unit/utils 폴더에 있는 테스트만 포함
         run: |
-          poetry run pytest
+          poetry run pytest tests/unit/utils/ # 특정 폴더 지정
+          # 또는 tests/unit/ 내에서 torch가 필요 없는 특정 파일들을 지정
+          # poetry run pytest tests/unit/data/test_data_processor.py tests/unit/config/test_config_loader.py
+
+  # 2. run_heavy_tasks_and_integration_tests Job: `[skip ci]` 키워드가 없을 때만 실행되는 무거운 작업 및 통합 테스트
+  run_heavy_tasks_and_integration_tests:
+    needs: build_lint_and_fast_tests # 이전 Job이 성공해야만 실행
+    runs-on: ubuntu-latest # 이 Job을 실행할 가상 환경 (GPU 필요 시 Self-hosted runner 고려)
+
+    # 이 Job을 건너뛸 조건: 커밋 메시지에 "[skip ci]"가 포함되어 있을 경우
+    if: >-
+      !(contains(github.event.head_commit.message, '[skip ci]')) &&
+      !(contains(github.event_name, 'pull_request') && (contains(github.event.pull_request.title, '[skip ci]') || contains(github.event.pull_request.body, '[skip ci]')) )
+
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }} and Poetry
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install Poetry dependencies
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --no-root --with dev
+
+      - name: Run Pytest (Heavy / Integration Tests)
+        # 중요: 여기서는 torch 의존성이 있는 단위 테스트 (models, training)와 통합 테스트 실행
+        run: |
+          poetry run pytest tests/unit/models/ tests/unit/training/ tests/integration/ # 여러 폴더 지정
+
+      - name: Run Training Script (Example - heavy operation, if applicable)
+        # 실제 모델 학습 스크립트 실행 (GPU가 필요할 수 있음)
+        # 이 단계는 CI에서 정말로 필요한지 팀과 논의하여 결정하세요.
+        # 가벼운 smoke test 학습이라면 괜찮지만, 전체 학습은 피하는 것이 좋습니다.
+        run: poetry run python scripts/main.py --mode train --config config/config.yaml --epochs 1 # 1 에포크만 돌리는 스모크 테스트
 
       - name: Upload Coverage Report (Optional)
-        uses: actions/upload-artifact@v4 # 아티팩트 업로드 Action (커버리지 리포트를 GitHub에 저장)
-        if: always() # 테스트 실패 여부와 상관없이 항상 실행 (리포트 확인용)
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage-report-${{ matrix.python-version }}
-          path: reports/coverage/ # pytest에서 생성된 커버리지 리포트 경로
-          retention-days: 5 # 아티팩트 보존 기간
-
-      # MLflow, Airflow 등의 추가 통합 (선택 사항)
-      # 실제 MLflow 서버나 Airflow DAG를 CI에서 실행하는 것은 복잡하며
-      # 보통 별도의 배포 파이프라인이나 스테이징 환경에서 이루어집니다.
-      # 여기서는 '코드'가 잘 작동하는지 검증하는 CI에 집중합니다.
+          path: reports/coverage/
+          retention-days: 5
