@@ -1,8 +1,11 @@
 import os
 import pathlib
+from typing import List, Optional
 
 
-def visualize_folder_structure(start_path, max_depth=None, exclude_patterns=None):
+def visualize_folder_structure(
+    start_path: str, max_depth: int | None = None, exclude_patterns: List[str] | None = None
+) -> None:
     """
     지정된 경로의 폴더 구조를 트리 형태로 시각화하여 출력합니다.
 
@@ -23,7 +26,7 @@ def visualize_folder_structure(start_path, max_depth=None, exclude_patterns=None
     exclude_set = set(exclude_patterns) if exclude_patterns else set()
 
     # 재귀 함수 정의
-    def _print_tree(current_path, current_depth):
+    def _print_tree(current_path: pathlib.Path, current_depth: int) -> None:
         if max_depth is not None and current_depth > max_depth:
             return
 

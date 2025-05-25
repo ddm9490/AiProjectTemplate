@@ -26,12 +26,12 @@ def test_utility_manager() -> UtilityManager:
 
 
 @pytest.fixture
-def test_configuration_manager(utility_manager: UtilityManager) -> ConfigurationManager:
+def test_configuration_manager(test_utility_manager: UtilityManager) -> ConfigurationManager:
     """
     Fixture for the ConfigurationManager instance.
 
     Args:
-        utility_manager (UtilityManager): An instance of UtilityManager.
+        test_utility_manager (UtilityManager): An instance of UtilityManager.
 
     Returns:
         ConfigurationManager: An instance of ConfigurationManager.

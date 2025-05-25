@@ -1,5 +1,3 @@
-# .github/workflows/ci.yml
-
 name: CI/CD Pipeline
 
 on:
@@ -11,8 +9,8 @@ on:
       - main
 
 jobs:
-  # 1. build_lint_and_fast_tests Job: 항상 실행되는 빠른 품질 검사 및 경량 테스트
-  build_lint_and_fast_tests:
+  # 1. build_lint_and_format_check Job: 가장 가볍고 빠르게 실행되는 코드 포맷팅 검사
+  build_lint_and_format_check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -26,33 +24,37 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
 
-      - name: Install Poetry dependencies
-        run: |
-          poetry config virtualenvs.in-project true
-          poetry install --no-root --with dev
+      - name: Configure Poetry to create .venv in project directory
+        run: poetry config virtualenvs.in-project true
 
-      - name: Run Ruff (Lint and Format Check)
-        run: |
-          poetry run ruff check .
-          poetry run ruff format . --check
+      - name: Poetry Cache (Only Core & Dev Deps for Formatting)
+        # 포맷팅만 위한 최소한의 의존성만 캐싱
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-dev-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-dev-
 
-      - name: Run Pytest (Fast / Unit Tests)
-        # 중요: 여기서는 torch 임포트 오버헤드가 없는 유닛 테스트만 실행
-        # 예를 들어, tests/unit/utils 폴더에 있는 테스트만 포함
-        run: |
-          poetry run pytest tests/unit/utils/ # 특정 폴더 지정
-          # 또는 tests/unit/ 내에서 torch가 필요 없는 특정 파일들을 지정
-          # poetry run pytest tests/unit/data/test_data_processor.py tests/unit/config/test_config_loader.py
+      - name: Install Poetry dependencies (only core and dev for format check)
+        # --with dev: Ruff를 위해 개발 의존성 설치
+        # --without heavy: 무거운 의존성은 설치하지 않음
+        run: poetry install --no-root --with dev --without heavy
 
-  # 2. run_heavy_tasks_and_integration_tests Job: `[skip ci]` 키워드가 없을 때만 실행되는 무거운 작업 및 통합 테스트
-  run_heavy_tasks_and_integration_tests:
-    needs: build_lint_and_fast_tests # 이전 Job이 성공해야만 실행
-    runs-on: ubuntu-latest # 이 Job을 실행할 가상 환경 (GPU 필요 시 Self-hosted runner 고려)
+      - name: Run Ruff Format Check
+        # 오직 포맷팅 규칙만 검사하여 가장 빠른 피드백 제공
+        run: poetry run ruff format . --check
 
-    # 이 Job을 건너뛸 조건: 커밋 메시지에 "[skip ci]"가 포함되어 있을 경우
+
+  # 2. run_full_checks_and_tests Job: 모든 린팅, 타입 검사 및 테스트 실행 (무거운 의존성 포함)
+  run_full_checks_and_tests:
+    needs: build_lint_and_format_check # 이전 Job이 성공해야만 실행
+    runs-on: ubuntu-latest
+
+    # 이 Job을 건너뛸 조건: 커밋 메시지나 Pull Request 제목/본문에 "[skip ci]"가 포함되어 있을 경우
     if: >-
       !(contains(github.event.head_commit.message, '[skip ci]')) &&
-      !(contains(github.event_name, 'pull_request') && (contains(github.event.pull_request.title, '[skip ci]') || contains(github.event.pull_request.body, '[skip ci]')) )
+      !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[skip ci]') || contains(github.event.pull_request.body, '[skip ci]')) )
 
     strategy:
       matrix:
@@ -70,21 +72,38 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
 
-      - name: Install Poetry dependencies
-        run: |
-          poetry config virtualenvs.in-project true
-          poetry install --no-root --with dev
+      - name: Configure Poetry to create .venv in project directory
+        run: poetry config virtualenvs.in-project true
 
-      - name: Run Pytest (Heavy / Integration Tests)
-        # 중요: 여기서는 torch 의존성이 있는 단위 테스트 (models, training)와 통합 테스트 실행
-        run: |
-          poetry run pytest tests/unit/models/ tests/unit/training/ tests/integration/ # 여러 폴더 지정
+      - name: Poetry Cache (All Dependencies)
+        # 모든 의존성을 위한 캐싱
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-poetry-all-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-all-
+
+      - name: Install Poetry dependencies (including heavy ones)
+        # --with dev,heavy: 개발 의존성 및 무거운 의존성 그룹 모두 설치
+        run: poetry install --no-root --with dev,heavy
+
+      - name: Run Ruff (Full Lint Check)
+        # 모든 린팅 규칙 검사 (Format Check는 이미 위에서 했으므로 필요시만 추가)
+        run: poetry run ruff check .
+
+      - name: Run MyPy (Type Checking)
+        # 모든 의존성이 설치된 환경에서 MyPy 실행
+        run: poetry run mypy
+
+      - name: Run Pytest (All Unit and Integration Tests)
+        # heavy 의존성이 필요한 모든 단위 테스트 및 통합 테스트 실행
+        # config, model, training, data 등 모든 테스트 폴더를 포함합니다.
+        run: poetry run pytest tests/unit/ tests/integration/
 
       - name: Run Training Script (Example - heavy operation, if applicable)
-        # 실제 모델 학습 스크립트 실행 (GPU가 필요할 수 있음)
-        # 이 단계는 CI에서 정말로 필요한지 팀과 논의하여 결정하세요.
-        # 가벼운 smoke test 학습이라면 괜찮지만, 전체 학습은 피하는 것이 좋습니다.
-        run: poetry run python scripts/main.py --mode train --config config/config.yaml --epochs 1 # 1 에포크만 돌리는 스모크 테스트
+        # 스모크 테스트 (예: 1 에포크 학습) 또는 기타 무거운 스크립트 실행
+        run: poetry run python scripts/main.py --mode train --config config/config.yaml --epochs 1
 
       - name: Upload Coverage Report (Optional)
         uses: actions/upload-artifact@v4

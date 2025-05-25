@@ -7,7 +7,7 @@ from torch import Tensor
 from torch.nn import Module
 
 
-class BaseModel(Module, ABC):
+class BaseNeuralModel(Module, ABC):
     """
     Base interface for PyTorch models.
     This interface defines the basic structure for any model that will be implemented.

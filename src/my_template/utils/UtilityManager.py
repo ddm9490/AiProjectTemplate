@@ -1,4 +1,3 @@
-import numpy as np
 import random
 import os
 
@@ -11,6 +10,7 @@ class UtilityManager:
         """Set seed for reproducibility."""
 
         import torch
+        import numpy as np
 
         np.random.seed(seed_value)
         torch.manual_seed(seed_value)
