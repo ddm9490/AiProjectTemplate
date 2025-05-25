@@ -1,7 +1,7 @@
 from my_template.abc_interfaces.data_interfaces import BaseDataPreprocessor
 
 
-class DataPreprocessor(BaseDataProcessor):
+class DataPreprocessor(BaseDataPreprocessor):
     def __init__(self) -> None:
         pass
 
