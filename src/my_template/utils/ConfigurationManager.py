@@ -7,7 +7,7 @@ from omegaconf import DictConfig
 
 class ConfigurationManager:
     def __init__(self, cfg_omega: DictConfig) -> None:
-        self._model_config = None
+        
 
         self._main_config : MainConfig = MainConfig.model_validate(cfg_omega)
 
