@@ -1,0 +1,84 @@
+global_setting:
+  project_name: AiProjectTemplate
+  device: cpu
+  seed: 42
+  num_epochs: 2
+logger:
+  name: basic logger
+  level: INFO
+  handlers:
+  - type: console
+    level: DEBUG
+  - type: file
+    filename: logs/app.log
+    level: INFO
+  format: '{time} {level} {message}'
+  datefmt: '%Y-%m-%d %H:%M:%S'
+model:
+  _target_: torchvision.models.resnet18
+  pretrained: false
+  num_classes: 10
+dataset:
+  dataset:
+    _target_: torchvision.datasets.CIFAR10
+    root: ./data/raw
+    download: true
+  train_dataloader:
+    _target_: torch.utils.data.DataLoader
+    batch_size: 64
+    shuffle: true
+    num_workers: 2
+    drop_last: false
+    dataset:
+      _target_: torchvision.datasets.CIFAR10
+      root: ${dataset.dataset.root}
+      train: true
+      download: ${dataset.dataset.download}
+      transform:
+        _target_: torchvision.transforms.Compose
+        transforms:
+        - _target_: torchvision.transforms.ToTensor
+        - _target_: torchvision.transforms.Normalize
+          mean:
+          - 0.4914
+          - 0.4822
+          - 0.4465
+          std:
+          - 0.2471
+          - 0.2435
+          - 0.2616
+  val_dataloader:
+    _target_: torch.utils.data.DataLoader
+    batch_size: 128
+    shuffle: false
+    num_workers: 2
+    drop_last: false
+    dataset:
+      _target_: torchvision.datasets.CIFAR10
+      root: ${dataset.dataset.root}
+      train: false
+      download: ${dataset.dataset.download}
+      transform:
+        _target_: torchvision.transforms.Compose
+        transforms:
+        - _target_: torchvision.transforms.ToTensor
+        - _target_: torchvision.transforms.Normalize
+          mean:
+          - 0.4914
+          - 0.4822
+          - 0.4465
+          std:
+          - 0.2471
+          - 0.2435
+          - 0.2616
+training:
+  loss:
+    _target_: torch.nn.CrossEntropyLoss
+    reduction: mean
+  optimizer:
+    _target_: torch.optim.Adam
+    lr: 0.001
+    weight_decay: 0.0
+  trainer:
+    log_interval: 10
+    eval_interval: 1
