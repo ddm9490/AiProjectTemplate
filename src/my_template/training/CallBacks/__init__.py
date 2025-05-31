@@ -1,3 +1,2 @@
 from my_template.training.CallBacks.CallBack import CallBack
 from my_template.training.CallBacks.EarlyStopping import EarlyStoppingCallBack
-from my_template.training.CallBacks.lr_scheduler import LrSchedulerCallBack

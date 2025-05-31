@@ -1,0 +1,6 @@
+# config/training/optimizer/base.yaml
+
+_target_: "torch.optim.Adam"
+lr: 0.001          # 학습률
+weight_decay: 0.0  # 가중치 감소 (L2 정규화)
+# params: null       # 모델 파라미터는 main.py 또는 Trainer에서 주입되므로 여기서는 null

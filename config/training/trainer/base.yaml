@@ -1,0 +1,6 @@
+# config/training/trainer/base.yaml
+
+log_interval: 10 # N 배치마다 콘솔 출력
+eval_interval: 1 # N 에포크마다 평가
+# save_interval: 1 # N 에포크마다 모델 저장 (Saver가 구현될 경우)
+# checkpoint_dir: "checkpoints" # 체크포인트 저장 경로

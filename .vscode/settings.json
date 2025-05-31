@@ -1,0 +1,8 @@
+{
+    "mypy-type-checker.preferDaemon": true,
+    "mypy-type-checker.reportingScope": "workspace", // 전체 워크스페이스를 검사할 때 dmypy 사용을 권장합니다.
+    "mypy-type-checker.path": [
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/tests"
+      ]
+}

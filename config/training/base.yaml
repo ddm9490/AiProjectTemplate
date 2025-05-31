@@ -1,5 +1,0 @@
-# @package _group_
-epochs: 10
-batch_size: 64
-optimizer: Adam
-learning_rate: 0.001

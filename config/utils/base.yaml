@@ -1,8 +1,0 @@
-# @package _group_
-device: auto  # "cpu", "cuda", "auto"
-seed: 42
-logging: true
-logging_level: INFO
-save_model: true
-save_path: checkpoints/
-checkpoint_frequency: 5 # 에폭마다 체크포인트 저장 빈도

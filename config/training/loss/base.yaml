@@ -1,0 +1,5 @@
+# config/training/loss/base.yaml
+
+_target_: "torch.nn.CrossEntropyLoss"
+reduction: "mean" # 손실 값을 평균낼지, 합산할지 등
+# ignore_index: -100 # 특정 타겟 클래스 인덱스를 무시할 경우

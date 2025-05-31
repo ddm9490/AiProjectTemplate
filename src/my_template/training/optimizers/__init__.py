@@ -1,1 +1,0 @@
-from my_template.training.optimizers.optimizer_factory import OptimizerFactory

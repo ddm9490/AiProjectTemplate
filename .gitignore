@@ -1,9 +1,11 @@
 .venv/
 *.pyc
-.env
 **/__pycache__/
 reports
 .coverage
 scripts/folder_tree.py
 .mypy_cache
-temp.log
+.pytest_cache
+.ruff_cache
+
+poetry.lock

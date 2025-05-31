@@ -1,5 +1,47 @@
-# @package _group_
-name: ImageNet
-data_path: /data/imagenet
-image_size: 224
-num_channels: 3
+# config/dataset/base.yaml
+
+# 데이터셋 설정 (CIFAR-10)
+dataset:
+  _target_: "torchvision.datasets.CIFAR10"
+  root: "./data/raw"     # 데이터셋이 저장될 경로
+  download: true
+
+# 데이터로더 설정 (학습용)
+train_dataloader: # DataLoader는 config/dataset 폴더에 있기 때문에 dataloader는 그룹으로 취급하지 않습니다.
+  _target_: "torch.utils.data.DataLoader"
+  batch_size: 64
+  shuffle: true
+  num_workers: 2 # 워커 수 (테스트 시 0으로 설정하면 오류 방지)
+  drop_last: false
+  dataset: # DataLoader 내에서 Dataset을 정의
+    _target_: "torchvision.datasets.CIFAR10"
+    root: ${dataset.dataset.root} # 상위 dataset.root 참조
+    train: true
+    download: ${dataset.dataset.download}
+    transform:
+      _target_: "torchvision.transforms.Compose"
+      transforms:
+        - _target_: "torchvision.transforms.ToTensor"
+        - _target_: "torchvision.transforms.Normalize"
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2471, 0.2435, 0.2616]
+
+# 데이터로더 설정 (검증용)
+val_dataloader:
+  _target_: "torch.utils.data.DataLoader"
+  batch_size: 128
+  shuffle: false
+  num_workers: 2 # 워커 수
+  drop_last: false
+  dataset:
+    _target_: "torchvision.datasets.CIFAR10"
+    root: ${dataset.dataset.root}
+    train: false
+    download: ${dataset.dataset.download}
+    transform:
+      _target_: "torchvision.transforms.Compose"
+      transforms:
+        - _target_: "torchvision.transforms.ToTensor"
+        - _target_: "torchvision.transforms.Normalize"
+          mean: [0.4914, 0.4822, 0.4465]
+          std: [0.2471, 0.2435, 0.2616]
